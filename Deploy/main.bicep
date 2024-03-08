@@ -1,30 +1,13 @@
-@description('The Azure region into which the resources should be deployed.')
 param location string = resourceGroup().location
 
-@description('The type of environment. This must be nonprod or prod.')
-@allowed([
-  'nonprod'
-  'prod'
-])
 param environmentType string
 
-@description('A unique suffix to add to resource names that need to be globally unique.')
-@maxLength(13)
 param resourceNameSuffix string = uniqueString(resourceGroup().id)
 
-var appServiceAppName = 'toy-website-${resourceNameSuffix}'
-var appServicePlanName = 'toy-website-plan'
 var toyManualsStorageAccountName = 'toyweb${resourceNameSuffix}'
 
-// Define the SKUs for each component based on the environment type.
 var environmentConfigurationMap = {
   nonprod: {
-    appServicePlan: {
-      sku: {
-        name: 'F1'
-        capacity: 1
-      }
-    }
     toyManualsStorageAccount: {
       sku: {
         name: 'Standard_LRS'
@@ -32,12 +15,6 @@ var environmentConfigurationMap = {
     }
   }
   prod: {
-    appServicePlan: {
-      sku: {
-        name: 'S1'
-        capacity: 2
-      }
-    }
     toyManualsStorageAccount: {
       sku: {
         name: 'Standard_ZRS'
@@ -46,28 +23,16 @@ var environmentConfigurationMap = {
   }
 }
 
-var toyManualsStorageAccountConnectionString = 'DefaultEndpointsProtocol=https;AccountName=${toyManualsStorageAccount.name};EndpointSuffix=${environment().suffixes.storage};AccountKey=${toyManualsStorageAccount.listKeys().keys[0].value}'
-
-resource appServicePlan 'Microsoft.Web/serverfarms@2022-03-01' = {
-  name: appServicePlanName
-  location: location
-  sku: environmentConfigurationMap[environmentType].appServicePlan.sku
+resource managementGroup 'Microsoft.Management/managementGroups@2021-04-01-preview' = {
+  name: 'yourManagementGroupName'
+  properties: {}
 }
 
-resource appServiceApp 'Microsoft.Web/sites@2022-03-01' = {
-  name: appServiceAppName
+resource managementResourceGroup 'Microsoft.Resources/resourceGroups@2021-04-01' = {
+  name: 'managementResourceGroup'
   location: location
   properties: {
-    serverFarmId: appServicePlan.id
-    httpsOnly: true
-    siteConfig: {
-      appSettings: [
-        {
-          name: 'ToyManualsStorageAccountConnectionString'
-          value: toyManualsStorageAccountConnectionString
-        }
-      ]
-    }
+    parentManagementGroupId: managementGroup.id
   }
 }
 
@@ -76,4 +41,12 @@ resource toyManualsStorageAccount 'Microsoft.Storage/storageAccounts@2022-09-01'
   location: location
   kind: 'StorageV2'
   sku: environmentConfigurationMap[environmentType].toyManualsStorageAccount.sku
+  properties: {
+    accessTier: 'Hot'
+  }
+  dependsOn: [
+    managementResourceGroup
+  ]
 }
+
+output toyManualsStorageAccountConnectionString string = concat('DefaultEndpointsProtocol=https;AccountName=', toyManualsStorageAccount.name, ';EndpointSuffix=', environment().suffixes.storage, ';AccountKey=', listKeys(toyManualsStorageAccount.id, environment().suffixes.storage).keys[0].value)
