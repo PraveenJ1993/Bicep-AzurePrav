@@ -13,7 +13,7 @@ var environmentConfigurationMap = {
         name: 'Standard_LRS'
       }
     }
-  }
+  },
   prod: {
     toyManualsStorageAccount: {
       sku: {
