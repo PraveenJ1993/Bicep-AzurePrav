@@ -1,14 +1,10 @@
 name: deploy-toy-website1
 on: 
-      workflow_dispatch:
+  workflow_dispatch:
 
 permissions:
   id-token: write
   contents: read
-
-env:
-    AZURE_RESOURCEGROUP_NAME: PraveenResourceGroup
-    ENVIRONMENT: nonprod
 
 jobs:
   deploy:
@@ -22,6 +18,4 @@ jobs:
     - uses: azure/arm-deploy@v1
       with:
         deploymentName: ${{ github.run_number }}
-        resourceGroupName: ${{ env.AZURE_RESOURCEGROUP_NAME }}
         template: ./Deploy/main.bicep
-        parameters: environmentType=${{ env.ENVIRONMENT }}
