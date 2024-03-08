@@ -7,7 +7,7 @@ permissions:
   contents: read
 
 env:
-    AZURE_RESOURCEGROUP_NAME: PhilipWebsite
+    AZURE_RESOURCEGROUP_NAME: PraveenResourceGroup
     ENVIRONMENT: nonprod
 
 jobs:
