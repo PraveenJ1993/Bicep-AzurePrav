@@ -17,9 +17,8 @@ jobs:
     - uses: actions/checkout@v3
     - uses: azure/login@v1
       with:
-        client-id: ${{ secrets.AZURE_CLIENT_ID }}
-        tenant-id: ${{ secrets.AZURE_TENANT_ID }}
-        subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+         creds: ${{ secrets.AZURE_CREDENTIALS }}
+         auth-type: SERVICE_PRINCIPAL
     - uses: azure/arm-deploy@v1
       with:
         deploymentName: ${{ github.run_number }}
