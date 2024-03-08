@@ -4,7 +4,7 @@ param environmentType string
 
 param resourceNameSuffix string = uniqueString(resourceGroup().id)
 
-var toyManualsStorageAccountName = 'toyweb${resourceNameSuffix}'
+var toyManualsStorageAccountName = 'Testweb${resourceNameSuffix}'
 
 var environmentConfigurationMap = {
   nonprod: {
