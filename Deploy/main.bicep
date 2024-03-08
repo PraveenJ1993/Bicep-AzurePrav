@@ -1,11 +1,8 @@
-targetScope = 'managementGroup'
+param resourceGroupName string = 'myResourceGroup'
+param location string
 
-param mgName string = 'myManagementGroup'
-
-resource newMG 'Microsoft.Management/managementGroups@2021-04-01' = {
-  scope: tenant()
+resource resourceGroup 'Microsoft.Resources/resourceGroups@2021-04-01' = {
+  name: resourceGroupName
+  location: location
   properties: {}
 }
-
-# Optional output for reference (consider using newMG.id directly)
-output newManagementGroupId string = newMG.id
