@@ -1,11 +1,13 @@
-name: deploy-toy-website
+name: deploy-toy-website1
 on: 
       workflow_dispatch:
+
 permissions:
   id-token: write
   contents: read
-  
+
 env:
+    AZURE_RESOURCEGROUP_NAME: test
     ENVIRONMENT: nonprod
 
 jobs:
@@ -15,11 +17,11 @@ jobs:
     - uses: actions/checkout@v3
     - uses: azure/login@v1
       with:
-         creds: ${{ secrets.AZURE_CREDENTIALS }}
-         auth-type: SERVICE_PRINCIPAL
+        creds: ${{ secrets.AZURE_CREDENTIALS }}
+        auth-type: SERVICE_PRINCIPAL
     - uses: azure/arm-deploy@v1
       with:
         deploymentName: ${{ github.run_number }}
+        resourceGroupName: ${{ env.AZURE_RESOURCEGROUP_NAME }}
         template: ./Deploy/main.bicep
         parameters: environmentType=${{ env.ENVIRONMENT }}
-
