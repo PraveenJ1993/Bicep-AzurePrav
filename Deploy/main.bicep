@@ -1,5 +1,5 @@
 @description('The Azure region into which the resources should be deployed.')
-param location string = resourceGroup().location
+param location string
 
 @description('The type of environment. This must be nonprod or prod.')
 @allowed([
@@ -10,21 +10,13 @@ param environmentType string
 
 @description('A unique suffix to add to resource names that need to be globally unique.')
 @maxLength(13)
-param resourceNameSuffix string = location
+param resourceNameSuffix string
 
-var appServiceAppName = 'toy-website-${resourceNameSuffix}'
-var appServicePlanName = 'toy-website-plan'
 var toyManualsStorageAccountName = 'toyweb${resourceNameSuffix}'
 
 // Define the SKUs for each component based on the environment type.
 var environmentConfigurationMap = {
   nonprod: {
-    appServicePlan: {
-      sku: {
-        name: 'F1'
-        capacity: 1
-      }
-    }
     toyManualsStorageAccount: {
       sku: {
         name: 'Standard_LRS'
@@ -32,41 +24,10 @@ var environmentConfigurationMap = {
     }
   }
   prod: {
-    appServicePlan: {
-      sku: {
-        name: 'S1'
-        capacity: 2
-      }
-    }
     toyManualsStorageAccount: {
       sku: {
         name: 'Standard_ZRS'
       }
-    }
-  }
-}
-
-var toyManualsStorageAccountConnectionString = 'DefaultEndpointsProtocol=https;AccountName=${toyManualsStorageAccount.name};EndpointSuffix=${environment().suffixes.storage};AccountKey=${toyManualsStorageAccount.listKeys().keys[0].value}'
-
-resource appServicePlan 'Microsoft.Web/serverfarms@2022-03-01' = {
-  name: appServicePlanName
-  location: location
-  sku: environmentConfigurationMap[environmentType].appServicePlan.sku
-}
-
-resource appServiceApp 'Microsoft.Web/sites@2022-03-01' = {
-  name: appServiceAppName
-  location: location
-  properties: {
-    serverFarmId: appServicePlan.id
-    httpsOnly: true
-    siteConfig: {
-      appSettings: [
-        {
-          name: 'ToyManualsStorageAccountConnectionString'
-          value: toyManualsStorageAccountConnectionString
-        }
-      ]
     }
   }
 }
@@ -76,4 +37,28 @@ resource toyManualsStorageAccount 'Microsoft.Storage/storageAccounts@2022-09-01'
   location: location
   kind: 'StorageV2'
   sku: environmentConfigurationMap[environmentType].toyManualsStorageAccount.sku
+}
+
+resource mg 'Microsoft.Management/managementGroups@2021-04-01' = {
+  name: 'exampleManagementGroup'
+  properties: {
+    displayName: 'Example Management Group'
+  }
+}
+
+resource mgAssignment 'Microsoft.Management/managementGroupAssignments@2021-04-01' = {
+  name: 'exampleManagementGroupAssignment'
+  scope: '/providers/Microsoft.Management/managementGroups/${mg.name}'
+  properties: {
+    displayName: 'Example Management Group Assignment'
+    principals: [
+      {
+        principalType: 'User'
+        principalId: '<Your User Principal ID>'
+      }
+    ]
+    roleDefinitionIds: [
+      '/providers/Microsoft.Authorization/roleDefinitions/<Your Role Definition ID>'
+    ]
+  }
 }
