@@ -1,8 +1,18 @@
 targetScope = 'tenant'
 
-param newManagementGroupName string = 'YourNewManagementGroup'
+param parentManagementGroupName string = 'NonProduction'
+param childManagementGroupName string = 'SecretRND'
 
-resource newManagementGroup 'Microsoft.Management/managementGroups@2021-04-01' = {
-  name: newManagementGroupName
-  location: 'global'
+resource parentManagementGroup 'Microsoft.Management/managementGroups@2020-05-01' = {
+  name: parentManagementGroupName
+  properties: {
+    displayName: 'Non-production'
+  }
+}
+
+resource childManagementGroup 'Microsoft.Management/managementGroups@2020-05-01' = {
+  name: childManagementGroupName
+  properties: {
+    displayName: 'Secret R&D Projects'
+  }
 }
