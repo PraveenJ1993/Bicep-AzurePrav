@@ -25,4 +25,4 @@ jobs:
       # Deploy management groups using Bicep and Azure CLI
       - name: Deploy Management Groups
         run: |
-          az deployment mg create --location <location> --template-file <path-to-bicep>
+          az deployment mg create --location 'East US' --template-file ./Deploy/main.bicep
