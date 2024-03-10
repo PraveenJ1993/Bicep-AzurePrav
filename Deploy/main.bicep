@@ -1,10 +1,5 @@
 @description('The Azure region into which the resources should be deployed.')
-param location string
-
 param location string = 'eastus'
-param resourceNameSuffix string = 'defaultSuffix'
-
-
 
 @description('The type of environment. This must be nonprod or prod.')
 @allowed([
@@ -15,7 +10,7 @@ param environmentType string
 
 @description('A unique suffix to add to resource names that need to be globally unique.')
 @maxLength(13)
-param resourceNameSuffix string
+param resourceNameSuffix string = 'defaultSuffix'
 
 var toyManualsStorageAccountName = 'toyweb${resourceNameSuffix}'
 
