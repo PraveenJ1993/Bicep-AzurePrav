@@ -45,20 +45,3 @@ resource mg 'Microsoft.Management/managementGroups@2021-04-01' = {
     displayName: 'Example Management Group'
   }
 }
-
-resource mgAssignment 'Microsoft.Management/managementGroupAssignments@2021-04-01' = {
-  name: 'exampleManagementGroupAssignment'
-  scope: '/providers/Microsoft.Management/managementGroups/${mg.name}'
-  properties: {
-    displayName: 'Example Management Group Assignment'
-    principals: [
-      {
-        principalType: 'User'
-        principalId: '<Your User Principal ID>'
-      }
-    ]
-    roleDefinitionIds: [
-      '/providers/Microsoft.Authorization/roleDefinitions/<Your Role Definition ID>'
-    ]
-  }
-}
