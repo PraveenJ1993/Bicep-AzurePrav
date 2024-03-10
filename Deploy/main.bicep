@@ -38,10 +38,3 @@ resource toyManualsStorageAccount 'Microsoft.Storage/storageAccounts@2022-09-01'
   kind: 'StorageV2'
   sku: environmentConfigurationMap[environmentType].toyManualsStorageAccount.sku
 }
-
-resource mg 'Microsoft.Management/managementGroups@2021-04-01' = {
-  name: 'exampleManagementGroup'
-  properties: {
-    displayName: 'Example Management Group'
-  }
-}
